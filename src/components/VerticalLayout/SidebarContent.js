@@ -1,0 +1,299 @@
+import PropTypes from "prop-types"
+import React, { useEffect, useRef } from "react"
+
+// //Import Scrollbar
+import SimpleBar from "simplebar-react"
+
+// MetisMenu
+import MetisMenu from "metismenujs"
+import { withRouter } from "react-router-dom"
+import { Link } from "react-router-dom"
+
+//i18n
+import { withTranslation } from "react-i18next"
+
+const SidebarContent = props => {
+  const ref = useRef()
+
+  // Use ComponentDidMount and ComponentDidUpdate method symultaniously
+  useEffect(() => {
+    // const pathName = props.location.pathname
+
+    // Don't take dynamic routes
+    const pathName = "/" + props.location.pathname.split("/")[1]
+
+    const initMenu = () => {
+      new MetisMenu("#side-menu")
+      let matchingMenuItem = null
+      const ul = document.getElementById("side-menu")
+      const items = ul.getElementsByTagName("a")
+      for (let i = 0; i < items.length; ++i) {
+        if (pathName === items[i].pathname) {
+          matchingMenuItem = items[i]
+          break
+        }
+      }
+      if (matchingMenuItem) {
+        activateParentDropdown(matchingMenuItem)
+      }
+    }
+    initMenu()
+  }, [props.location.pathname])
+
+  useEffect(() => {
+    ref.current.recalculate()
+  })
+
+  function scrollElement(item) {
+    if (item) {
+      const currentPosition = item.offsetTop
+      if (currentPosition > window.innerHeight) {
+        ref.current.getScrollElement().scrollTop = currentPosition - 300
+      }
+    }
+  }
+
+  function activateParentDropdown(item) {
+    item.classList.add("active")
+    const parent = item.parentElement
+    const parent2El = parent.childNodes[1]
+    if (parent2El && parent2El.id !== "side-menu") {
+      parent2El.classList.add("mm-show")
+    }
+    if (parent) {
+      parent.classList.add("mm-active")
+      const parent2 = parent.parentElement
+
+      if (parent2) {
+        parent2.classList.add("mm-show") // ul tag
+
+        const parent3 = parent2.parentElement // li tag
+
+        if (parent3) {
+          parent3.classList.add("mm-active") // li
+          parent3.childNodes[0].classList.add("mm-active") //a
+          const parent4 = parent3.parentElement // ul
+          if (parent4) {
+            parent4.classList.add("mm-show") // ul
+            const parent5 = parent4.parentElement
+            if (parent5) {
+              parent5.classList.add("mm-show") // li
+              parent5.childNodes[0].classList.add("mm-active") // a tag
+            }
+          }
+        }
+      }
+      scrollElement(item)
+      return false
+    }
+    scrollElement(item)
+    return false
+  }
+
+  return (
+    <React.Fragment>
+      <SimpleBar ref={ref}>
+        <div id="sidebar-menu">
+          <ul className="metismenu list-unstyled" id="side-menu">
+            <li>
+              {/* Home Tab */}
+              <Link to="/#" className="waves-effect">
+                <i className="bx bx-home-circle"></i>
+                <span>{props.t("HOME")}</span>
+              </Link>
+            </li>
+            {/* Exhanger Tab */}
+            <li>
+              <Link to="/exchanger" className="waves-effect">
+                <i className="fas fa-exchange-alt"></i>
+                <span>{props.t("EXCHANGER")}</span>
+              </Link>
+            </li>
+            {/* Orders Tab */}
+            <li>
+              <Link to="/orders" className="has-arrow waves-effect">
+                <i className="bx bx-cart"></i>
+                <span>{props.t("ORDERS")}</span>
+              </Link>
+              <ul className="sub-menu" aria-expanded="false">
+                <li>
+                  <Link to="/todo">{props.t("Todo")}</Link>
+                </li>
+                <li>
+                  <Link to="/ratings">{props.t("Ratings")}</Link>
+                </li>
+                <li>
+                  <Link to="/favorite">{props.t("Favorite")}</Link>
+                </li>
+                <li>
+                  <Link to="/bindings">{props.t("Bindings")}</Link>
+                </li>
+                <li>
+                  <Link to="/alert">{props.t("Alert")}</Link>
+                </li>
+                <li>
+                  <Link to="/blacklist">{props.t("Blacklist")}</Link>
+                </li>
+              </ul>
+            </li>
+            {/* Wallet Tab */}
+            <li>
+              <Link to="/#" className="has-arrow waves-effect">
+                <i className="bx bx-wallet"></i>
+                <span>{props.t("WALLET")}</span>
+              </Link>
+              <ul className="sub-menu" aria-expanded="true">
+                <li>
+                  <Link to="/balances">{props.t("Balances")}</Link>
+                </li>
+                <li>
+                  <Link to="/history">{props.t("Transactions history")}</Link>
+                </li>
+                <li>
+                  <Link to="/send">
+                    <span>{props.t("Send")}</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/conversion">
+                    <span>{props.t("Conversion")}</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/request">
+                    <span>{props.t("Request")}</span>
+                  </Link>
+                </li>
+              </ul>
+            </li>
+            {/* Send Tab */}
+
+            {/* Cryptoswap Tab */}
+            <li>
+              <Link to="/cryptoswab" className="waves-effect">
+                <i className="bx bx-bitcoin"></i>
+                <span>{props.t("CRYTPOSWAB")}</span>
+              </Link>
+            </li>
+            {/* Cash Station Tab */}
+            <li>
+              <Link to="/cash-station" className="waves-effect">
+                <i className="bx bx-money"></i>
+                <span>{props.t("CASH STATION")}</span>
+              </Link>
+            </li>
+            {/* Invite Tab */}
+            <li>
+              <Link to="/invite" className="waves-effect">
+                <i className="bx bxs-user-plus"></i>
+                <span>{props.t("INVITE")}</span>
+              </Link>
+            </li>
+            {/* Inbox Tab */}
+            <li>
+              <Link to="/inbox" className="waves-effect">
+                <i className="bx bxs-inbox"></i>
+                <span>{props.t("INBOX")}</span>
+              </Link>
+            </li>
+            {/* Helpdesk Tab */}
+            <li>
+              <Link to="/help-desk" className="waves-effect">
+                <i className="bx bx-help-circle"></i>
+                <span>{props.t("HELPDESK")}</span>
+              </Link>
+            </li>
+            {/* Merchant Tab */}
+            <li>
+              <Link to="/merchant" className="waves-effect">
+                <i className="bx bx-store"></i>
+                <span>{props.t("MERCHANT")}</span>
+              </Link>
+            </li>
+            {/* Arbitration Tab */}
+            <li>
+              <Link to="/arbitration" className="waves-effect">
+                <i className="fas fa-handshake"></i>
+                <span>{props.t("ARBITRATION")}</span>
+              </Link>
+            </li>
+            {/* Settings Tab */}
+            <li>
+              <Link to="/settings" className="has-arrow waves-effect">
+                <i className="fas fa-cog"></i>
+                <span>{props.t("SETTINGS")}</span>
+              </Link>
+              <ul className="sub-menu" aria-expanded="false">
+                <li>
+                  <Link to="/my_profile" className="has-arrow waves-effect">
+                    {props.t("My profile")}
+                  </Link>
+                  <ul className="sub-menu" aria-expanded="false">
+                    <li>
+                      <Link to="/profile/details">
+                        {props.t("Profile Details")}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/profile/phone">{props.t("Phone number")}</Link>
+                    </li>
+                    <li>
+                      <Link to="/profile/email">{props.t("Change email")}</Link>
+                    </li>
+                    <li>
+                      <Link to="/profile/verification">
+                        {props.t("Verification")}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/profile/recurring_payment">
+                        {props.t("Recurring payment")}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/profile/uploads">{props.t("My Uploads")}</Link>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <Link to="/security" className="has-arrow waves-effect">
+                    {props.t("Security")}
+                  </Link>
+                  <ul className="sub-menu" aria-expanded="false">
+                    <li>
+                      <Link to="/profile/phone">{props.t("Pin Number")}</Link>
+                    </li>
+                    <li>
+                      <Link to="/profile/phone">{props.t("Password")}</Link>
+                    </li>
+                    <li>
+                      <Link to="/profile/details">
+                        {props.t("Security Questions")}
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <Link to="/static_qr">{props.t("My static QR")}</Link>
+                </li>
+                <li>
+                  <Link to="/language">{props.t("Language")}</Link>
+                </li>
+                <li>
+                  <Link to="/cash_station">{props.t("Cash Station")}</Link>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </SimpleBar>
+    </React.Fragment>
+  )
+}
+
+SidebarContent.propTypes = {
+  location: PropTypes.object,
+  t: PropTypes.any,
+}
+
+export default withRouter(withTranslation()(SidebarContent))
